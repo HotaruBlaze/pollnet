@@ -38,12 +38,21 @@ jobs:
           command: build
           use-cross: ${{ matrix.job.use-cross }}
           args: --release --target ${{ matrix.job.target }}
-          
-      - name: Release with artifacts
-        uses: ncipollo/release-action@v1
+
+      - name: Change Build artifact name
+        shell: bash
+        run: |
+          if [[ ${{ matrix.job.os }} == ubuntu-latest ]]; then
+          mv target/${{ matrix.job.target }}/release/libpollnet.so target/${{ matrix.job.target }}/release/libpollnet_${{ matrix.job.target }}.so
+          fi
+          if [[ ${{ matrix.job.os }} == windows-latest ]]; then
+          mv target/${{ matrix.job.target }}/release/libpollnet.dll target/${{ matrix.job.target }}/release/libpollnet_${{ matrix.job.target }}.dll
+          fi
+
+      - name: Releasing assets
+        uses: softprops/action-gh-release@v1
         with:
-          name: Pollnet ${{ github.event.ref }}
-          tag: ${{ github.event.ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit: ${{ github.sha }}
-          artifacts: ${{ matrix.job.target }}
+          files: |
+            target/${{ matrix.job.target }}/release/libpollnet_*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

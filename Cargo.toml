@@ -5,6 +5,7 @@ authors = ["probable-basilisk <basilisk@mtknn.com>"]
 edition = "2018"
 
 [dependencies]
+openssl = { version = "0.10.38", features = ["vendored"] }
 tokio-tungstenite = {version = "*", features = ["tls"]}
 tungstenite = {version = "*", features = ["tls"]}
 futures = "*"
